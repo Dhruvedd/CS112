@@ -72,7 +72,6 @@ public class ClimateEconJustice {
         String[] data = inputLine.split(",");
         String state = data[2];
         StateNode newStateNode = new StateNode();
-
         newStateNode.setName(state);
 
         StateNode stateNode = firstState;
