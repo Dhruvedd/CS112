@@ -114,8 +114,47 @@ public class ClimateEconJustice {
     */
     public void addToCountyLevel ( String inputLine ) {
 
-        // WRITE YOUR CODE HERE
+        StateNode MyState = new StateNode();
 
+        String[] data = inputLine.split(",");
+        String state = data[2];
+        String county = data[1];
+
+        for(StateNode ptr = firstState;ptr != null;ptr = ptr.next){
+
+            if((ptr.name).equals(state)){
+                MyState = ptr;
+            }
+        }
+
+
+        CountyNode hehe = new CountyNode();
+        hehe.name = county;
+
+        if(MyState.down == null){
+            MyState.down = hehe;
+            return;
+        }
+
+        CountyNode ptr1 = MyState.down;
+
+        while(ptr1 != null){
+
+            if((ptr1.getName()).equals(county)){
+                return;
+            }
+
+            ptr1 = ptr1.next;
+        }
+
+        ptr1 = MyState.down;
+
+        while(ptr1.next != null){
+            ptr1 = ptr1.next;
+        }
+
+
+        ptr1.next = hehe;
     }
 
     /*
@@ -136,6 +175,67 @@ public class ClimateEconJustice {
 
         // WRITE YOUR CODE HERE
 
+        StateNode meState = new StateNode();
+        CountyNode meCounty = new CountyNode();
+
+        String[] dat = inputLine.split(",");
+        String state = dat[2];
+        String county = dat[1];
+        String Comm = dat[0];
+
+        Data data = new Data();
+
+        data.chanceOfFlood = Double.parseDouble(dat[37]);
+        data.prcntPovertyLine = Double.parseDouble(dat[121]);
+        data.prcntAfricanAmerican = Double.parseDouble(dat[3]);
+        data.prcntNative = Double.parseDouble(dat[4]);
+        data.prcntAsian = Double.parseDouble(dat[5]);
+        data.prcntHispanic = Double.parseDouble(dat[9]);
+        data.prcntWhite = Double.parseDouble(dat[8]);
+        data.disadvantaged = dat[19];
+        data.PMlevel = Double.parseDouble(dat[49]);
+
+
+        for(StateNode ptr = firstState;ptr != null;ptr = ptr.next){
+
+            if((ptr.name).equals(state)){
+                meState = ptr;
+            }
+        }
+
+        CountyNode firstCounty = meState.down;
+
+        if(firstCounty == null){return;}
+
+        for(CountyNode ptr1 = firstCounty; ptr1 != null;ptr1 = ptr1.next){
+            if((ptr1.name).equals(county)){
+                meCounty = ptr1;
+            }
+        }
+
+        CommunityNode newComm = new CommunityNode();
+        newComm.name = Comm;
+        newComm.info = data;
+
+        if(meCounty.down == null){
+            meCounty.down = newComm;
+            return;
+        }
+
+        for(CommunityNode ptr2 = meCounty.down; ptr2 != null; ptr2 = ptr2.next){
+            if((ptr2.name).equals(Comm)){
+                return;
+            }
+        }
+
+        CommunityNode ptr3 = meCounty.down;
+
+        while( ptr3.next != null){
+            ptr3 = ptr3.next;
+        }
+
+        ptr3.next = newComm;
+
     }
 
     /**
@@ -151,8 +251,69 @@ public class ClimateEconJustice {
      */
     public int disadvantagedCommunities ( double userPrcntage, String race ) {
 
-        // WRITE YOUR CODE HERE
-        return 0; // replace this line
+        if((firstState == null) || (firstState.down == null)){
+            return 0;
+        }
+        else if(firstState.down.down == null){
+            return 0;
+        }
+
+        int lol = 0;
+
+
+        for(StateNode ptr1 = firstState; ptr1 != null; ptr1 = ptr1.next){
+
+            for(CountyNode ptr2 = ptr1.down; ptr2 != null; ptr2 = ptr2.next){
+
+                for(CommunityNode ptr3 = ptr2.down; ptr3 != null; ptr3 = ptr3.next){
+
+                    if(race.equals("African American")){
+                        if((ptr3.info.prcntAfricanAmerican)*100 >= userPrcntage){
+                            if(ptr3.info.getAdvantageStatus().equals("True")){
+                                lol++;
+                            }
+                        }
+                    }
+
+                    else if(race.equals("Native American")){
+                        if((ptr3.info.prcntNative)*100 >= userPrcntage){
+                            if(ptr3.info.getAdvantageStatus().equals("True")){
+                                lol++;
+                            }
+                        }
+                    }
+
+                    else if(race.equals("White American")){
+                        if((ptr3.info.prcntWhite)*100 >= userPrcntage){
+                            if(ptr3.info.getAdvantageStatus().equals("True")){
+                                lol++;
+                            }
+                        }
+                    }
+
+                    else if(race.equals("Asian American")){
+                        if((ptr3.info.prcntAsian)*100 >= userPrcntage){
+                            if(ptr3.info.getAdvantageStatus().equals("True")){
+                                lol++;
+                            }
+                        }
+                    }
+
+                    else if(race.equals("Hispanic American")){
+                        if((ptr3.info.prcntWhite)*100 >= userPrcntage){
+                            if(ptr3.info.getAdvantageStatus().equals("True")){
+                                lol++;
+                            }
+                        }
+                    }
+                    
+                }
+
+            }
+
+        }
+        
+        return lol; // replace this line
     }
 
     /**
@@ -168,8 +329,69 @@ public class ClimateEconJustice {
      */
     public int nonDisadvantagedCommunities ( double userPrcntage, String race ) {
 
-        //WRITE YOUR CODE HERE
-        return 0; // replace this line
+        if((firstState == null) || (firstState.down == null)){
+            return 0;
+        }
+        else if(firstState.down.down == null){
+            return 0;
+        }
+
+        int gandu = 0;
+
+
+        for(StateNode ptr1 = firstState; ptr1 != null; ptr1 = ptr1.next){
+
+            for(CountyNode ptr2 = ptr1.down; ptr2 != null; ptr2 = ptr2.next){
+
+                for(CommunityNode ptr3 = ptr2.down; ptr3 != null; ptr3 = ptr3.next){
+
+                    if(race.equals("African American")){
+                        if((ptr3.info.prcntAfricanAmerican)*100 >= userPrcntage){
+                            if(ptr3.info.getAdvantageStatus().equals("False")){
+                                gandu++;
+                            }
+                        }
+                    }
+
+                    else if(race.equals("Native American")){
+                        if((ptr3.info.prcntNative)*100 >= userPrcntage){
+                            if(ptr3.info.getAdvantageStatus().equals("False")){
+                                gandu++;
+                            }
+                        }
+                    }
+
+                    else if(race.equals("White American")){
+                        if((ptr3.info.prcntWhite)*100 >= userPrcntage){
+                            if(ptr3.info.getAdvantageStatus().equals("False")){
+                                gandu++;
+                            }
+                        }
+                    }
+
+                    else if(race.equals("Asian American")){
+                        if((ptr3.info.prcntAsian)*100 >= userPrcntage){
+                            if(ptr3.info.getAdvantageStatus().equals("False")){
+                                gandu++;
+                            }
+                        }
+                    }
+
+                    else if(race.equals("Hispanic American")){
+                        if((ptr3.info.prcntWhite)*100 >= userPrcntage){
+                            if(ptr3.info.getAdvantageStatus().equals("False")){
+                                gandu++;
+                            }
+                        }
+                    }
+                    
+                }
+
+            }
+
+        }
+
+        return gandu; // replace this line
     }
     
     /** 
@@ -181,8 +403,35 @@ public class ClimateEconJustice {
      */ 
     public ArrayList<StateNode> statesPMLevels ( double PMlevel ) {
 
-        // WRITE YOUR METHOD HERE
-        return null; // replace this line
+        ArrayList<StateNode> rand = new ArrayList<>();
+
+        if((firstState == null) || (firstState.down == null)){
+            return null;
+        }
+        else if(firstState.down.down == null){
+            return null;
+        }
+
+
+        for(StateNode ptr1 = firstState; ptr1 != null; ptr1 = ptr1.next){
+
+            for(CountyNode ptr2 = ptr1.down; ptr2 != null; ptr2 = ptr2.next){
+
+                for(CommunityNode ptr3 = ptr2.down; ptr3 != null; ptr3 = ptr3.next){
+
+                    if((ptr3.info.PMlevel >= PMlevel) && (rand.contains(ptr1) == false)){
+                        rand.add(ptr1);
+                    }
+                   
+                    
+                }
+
+            }
+
+        }
+
+
+        return rand; // replace this line
     }
 
     /**
@@ -195,8 +444,36 @@ public class ClimateEconJustice {
      */
     public int chanceOfFlood ( double userPercntage ) {
 
-        // WRITE YOUR METHOD HERE
-        return 0; // replace this line
+        
+        if((firstState == null) || (firstState.down == null)){
+            return 0;
+        }
+        else if(firstState.down.down == null){
+            return 0;
+        }
+
+        int bsdn = 0;
+
+
+        for(StateNode ptr1 = firstState; ptr1 != null; ptr1 = ptr1.next){
+
+            for(CountyNode ptr2 = ptr1.down; ptr2 != null; ptr2 = ptr2.next){
+
+                for(CommunityNode ptr3 = ptr2.down; ptr3 != null; ptr3 = ptr3.next){
+
+                    if(ptr3.info.chanceOfFlood >= userPercntage){
+                        bsdn++;
+                    }
+                   
+                    
+                }
+
+            }
+
+        }
+
+
+        return bsdn; // replace this line
     }
 
     /** 
@@ -206,10 +483,70 @@ public class ClimateEconJustice {
      *  @param stateName the State to be analyzed
      *  @return the top 10 lowest income communities in the State, with no particular order
     */
+
+    private CommunityNode ameer(ArrayList<CommunityNode> gareeba){
+
+        CommunityNode dani = new CommunityNode();
+        dani = gareeba.get(0);
+        
+        for(int i = 0; i < 10; i++){
+            if(gareeba.get(i).info.prcntPovertyLine < dani.info.prcntPovertyLine){
+                dani = gareeba.get(i);
+                System.out.println(0);
+            }
+        }
+
+        return dani;
+    }
+
+
+
     public ArrayList<CommunityNode> lowestIncomeCommunities ( String stateName ) {
 
-        //WRITE YOUR METHOD HERE
-        return null; // replace this line
+        
+        StateNode meState = new StateNode();
+        ArrayList<CommunityNode> gareeb = new ArrayList<>();
+
+        for(StateNode ptr1 = firstState;ptr1 != null;ptr1 = ptr1.next){
+
+            if((ptr1.name).equals(stateName)){
+                meState = ptr1;
+            }
+        }
+
+        for(CountyNode ptr2 = meState.down; ptr2 != null; ptr2 = ptr2.next){
+
+            for(CommunityNode ptr3 = ptr2.down; ptr3 != null; ptr3 = ptr3.next){
+
+                if(gareeb.size() < 10){
+                    gareeb.add(ptr3);
+                }
+
+                else{
+
+                    int j = 0;
+
+                    for(int i = 0;i < 10;i++){
+                        if(gareeb.get(i) == ameer(gareeb)){
+                            j = i;
+                            break;
+                        }
+                    }
+
+                    if(gareeb.get(j).info.prcntPovertyLine < ptr3.info.prcntPovertyLine){
+                        gareeb.set(j, ptr3);
+                        System.out.println(2);
+                    }
+
+
+
+                }
+
+            }
+
+        }
+
+
+        return gareeb; // replace this line
     }
 }
-    
