@@ -268,12 +268,37 @@ public class ForensicAnalysis {
      */
     public String[] getUnmarkedPeople() {
 
-        Queue<String> newQ = new Queue<String>();
+        Queue<TreeNode> newQ = new Queue<TreeNode>();
 
+        int l = getMatchingProfileCount(false);
 
+        String[] unMark = new String[l];
 
+        if(treeRoot != null){
+            newQ.enqueue(treeRoot);
+        }
 
-        return null; // update this line
+        int i = 0;
+
+        while(!newQ.isEmpty()){
+            
+
+            TreeNode temp = newQ.dequeue();
+
+            if(temp.getProfile().getMarkedStatus() == false){unMark[i] = temp.getName();
+            i++;
+        }
+
+            if(temp.getLeft() != null) newQ.enqueue(temp.getLeft());
+
+            if(temp.getRight() != null) newQ.enqueue(temp.getRight());
+
+            
+        }
+
+        
+
+        return unMark; // update this line
     }
 
     /**
@@ -286,8 +311,60 @@ public class ForensicAnalysis {
      * @param fullName the full name of the person to delete
      */
     public void removePerson(String fullName) {
-        // WRITE YOUR CODE HERE
         
+        treeRoot = removeHelper(treeRoot, fullName);
+        
+    }
+
+    private TreeNode removeHelper(TreeNode node , String fullName){
+        if(node == null) //tree is null
+        {
+            return null;
+        }
+
+        if(fullName.compareTo(node.getName()) == 0)//name found
+        {
+            if(node.getLeft() == null && node.getRight() == null)//no children
+            {
+                node = null;
+            }
+            else if(node.getLeft() == null && node.getRight() != null)//only right child
+            {
+                node = node.getRight();
+            }
+            else if(node.getLeft() != null && node.getRight() == null)//only left child
+            {
+                node = node.getLeft();
+            }
+            else//two children nodes
+            {
+                TreeNode successor = successorHelper(node.getRight());
+                node.setName(successor.getName());
+                node.setProfile(successor.getProfile());
+                node.setRight(removeHelper(node.getRight(), successor.getName()));
+            }
+        }
+        else if(fullName.compareTo(node.getName()) > 0)//traverse tree to right
+        {
+            node.setRight(removeHelper(node.getRight(), fullName));
+        }
+        else
+        {
+            node.setLeft(removeHelper(node.getLeft(), fullName));//to left
+        }
+        return node;
+    }
+
+    private TreeNode successorHelper(TreeNode node)
+    {
+        if(node.getLeft() == null)
+        {
+            return node;
+        }
+        else
+        {
+            return successorHelper(node.getLeft());
+        }
     }
 
     /**
@@ -295,8 +372,19 @@ public class ForensicAnalysis {
      * profiles.
      * Requires the use of getUnmarkedPeople and removePerson.
      */
+
+    /**
+     * Clean up the tree by using previously written methods to remove unmarked
+     * profiles.
+     * Requires the use of getUnmarkedPeople and removePerson.
+     */
     public void cleanupTree() {
-        // WRITE YOUR CODE HERE
+        
+            // WRITE YOUR CODE HERE
+            String[] names = getUnmarkedPeople();
+                for(String x : names){
+                removePerson(x);
+            }
 
     }
 
