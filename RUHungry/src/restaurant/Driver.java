@@ -34,8 +34,6 @@ public class Driver {
 
         rh.createStockHashTable(inputFile2);// testing createStockHashTable and addStockNode methods
 
-        rh.updateStock(null, 139, 90);//testing Update Stock
-
         rh.updatePriceAndProfit();//testing that method
 
 
@@ -103,7 +101,7 @@ public class Driver {
                 else if(type.equalsIgnoreCase("restock")){
                         rh.restock(item, amount);
                 }
-        }
+        } 
 
 
 	// 4. Set output file

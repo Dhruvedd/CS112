@@ -538,6 +538,8 @@ public class RUHungry {
             for(int i = 0; i < ptr.getDish().getStockID().length;i++){
                 updateStock(null, ptr.getDish().getStockID()[i], (quantity)*(-1));
             }
+
+            return;
             
         }
 
@@ -703,6 +705,14 @@ public class RUHungry {
 
         }
 
+        else{
+
+            data.setSuccess(false);
+
+            addTransactionNode(data);
+            
+        }
+
     }
 
     /**
@@ -734,7 +744,7 @@ public class RUHungry {
             data.setSuccess(true);
 
             addTransactionNode(data);
-            updateStock(ingredientName, 0, (-1)*(quantity));
+            updateStock(ingredientName, 0, quantity);
         }
 
         else{
