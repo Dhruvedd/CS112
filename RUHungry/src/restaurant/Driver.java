@@ -40,7 +40,7 @@ public class Driver {
 
 
 
-        StdIn.setFile("order1.in");
+       /* StdIn.setFile("order1.in");
         int amount = StdIn.readInt();
         StdIn.readLine();
 
@@ -54,6 +54,56 @@ public class Driver {
         } // Testing the order method
 
 
+       /*  StdIn.setFile("donate1.in");
+        int numDono = StdIn.readInt();
+        StdIn.readLine();
+
+        while(StdIn.hasNextLine()){
+
+                int DonoAmount = StdIn.readInt();
+                StdIn.readChar();
+                String item = StdIn.readLine();
+
+                rh.donation(item, DonoAmount);
+        }//testing Donate 
+
+        StdIn.setFile("restock1.in");
+        int resDono = StdIn.readInt();
+        StdIn.readLine();
+
+        while(StdIn.hasNextLine()){
+
+                int resAmount = StdIn.readInt();
+                StdIn.readChar();
+                String item = StdIn.readLine();
+
+                rh.restock(item, resAmount);
+        }//testing restock */
+
+        StdIn.setFile("transaction1.in");
+        int numTrans = StdIn.readInt();
+        StdIn.readLine();
+
+        while(StdIn.hasNextLine()){
+
+                String type = StdIn.readString();
+                StdIn.readChar();
+                int amount = StdIn.readInt();
+                StdIn.readChar();
+                String item = StdIn.readLine();
+
+                if(type.equalsIgnoreCase("order")){
+                        rh.order(item, amount);
+                }
+
+                else if(type.equalsIgnoreCase("donation")){
+                        rh.donation(item, amount);
+                }
+
+                else if(type.equalsIgnoreCase("restock")){
+                        rh.restock(item, amount);
+                }
+        }
 
 
 	// 4. Set output file
@@ -63,6 +113,6 @@ public class Driver {
 	// 5. Print restaurant
         rh.printRestaurant();
 
-        System.out.println(rh.findStockNode(139).getIngredient().getName());//testing FindStockNode with ID
+
     }
 }

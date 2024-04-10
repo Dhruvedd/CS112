@@ -343,7 +343,7 @@ public class RUHungry {
 
             for(MenuNode ptr = menuVar[i]; ptr != null; ptr = ptr.getNextMenuNode()){
 
-                double dishCost = 0;
+                double dishCost = 0.0;
                 
                 for(int j = 0; j < ptr.getDish().getStockID().length;j++){
 
@@ -359,8 +359,6 @@ public class RUHungry {
 
                 currentDish.setPriceOfDish(dishPrice);
                 currentDish.setProfit(dishProfit);
-
-                ptr.setDish(currentDish);
             }
 
 
@@ -454,7 +452,7 @@ public class RUHungry {
 
         else{
             
-            TransactionNode ptr = new TransactionNode();
+            TransactionNode ptr = transactionVar;
 
             while(ptr.getNext() != null){
                ptr = ptr.getNext();
@@ -532,70 +530,109 @@ public class RUHungry {
             sucOrder.setItem(ptr.getDish().getName());
             sucOrder.setAmount(quantity);
             sucOrder.setType("order");
-            sucOrder.setProfit((ptr.getDish().getProfit())*(quantity));
+            sucOrder.setProfit((ptr.getDish().getProfit())*(quantity*1.0));
             sucOrder.setSuccess(true);
 
             addTransactionNode(sucOrder);
+
+            for(int i = 0; i < ptr.getDish().getStockID().length;i++){
+                updateStock(null, ptr.getDish().getStockID()[i], (quantity)*(-1));
+            }
+            
         }
 
         else{
 
+                TransactionData unSucOrder = new TransactionData();
+
+                unSucOrder.setItem(dishName);
+                unSucOrder.setAmount(quantity);
+                unSucOrder.setProfit(0.0);
+                unSucOrder.setSuccess(false);
+                unSucOrder.setType("order");
+
             //going to loop until reaching the end and then loop until reaching the start point, stopping everything if succsess is achieved
 
-            boolean hit = false;
             MenuNode stopper = ptr;
 
             while(ptr != null){
 
                 if(checkDishAvailability(ptr.getDish().getName(), quantity)){
-                    hit = true;
-                    break;
+
+                    TransactionData sucOrder = new TransactionData();
+
+                    sucOrder.setItem(ptr.getDish().getName());
+                    sucOrder.setAmount(quantity);
+                    sucOrder.setType("order");
+                    sucOrder.setProfit((ptr.getDish().getProfit())*(quantity*1.0));
+                    sucOrder.setSuccess(true);
+
+                    addTransactionNode(sucOrder);
+
+                    for(int i = 0; i < ptr.getDish().getStockID().length;i++){
+                        updateStock(null, ptr.getDish().getStockID()[i], (quantity)*(-1));
+                    }
+                    
+                    return;
+                }
+
+                else{
+
+                    TransactionData sucOrder = new TransactionData();
+
+                    sucOrder.setItem(ptr.getDish().getName());
+                    sucOrder.setAmount(quantity);
+                    sucOrder.setType("order");
+                    sucOrder.setProfit(0.0);
+                    sucOrder.setSuccess(false);
+
+                    addTransactionNode(sucOrder);
+
                 }
 
                 ptr = ptr.getNextMenuNode();
             }
+            /*************** */
 
-            if(hit == true){
-                TransactionData sucOrder = new TransactionData();
-
-                sucOrder.setItem(ptr.getDish().getName());
-                sucOrder.setAmount(quantity);
-                sucOrder.setType("order");
-                sucOrder.setProfit((ptr.getDish().getProfit())*(quantity));
-                sucOrder.setSuccess(true);
-
-                addTransactionNode(sucOrder);
-            }
-
-            else if(hit == false){
                 
-                ptr = menuVar[findCategoryIndex(dishName)];
+                ptr = menuVar[findCategoryIndex(findDish(dishName).getDish().getCategory())];
 
-                while(ptr.getNextMenuNode().equals(stopper) == false){
+                while(ptr != stopper){
 
                     if(checkDishAvailability(ptr.getDish().getName(), quantity)){
-                        hit = true;
-                        break;
+
+                        TransactionData sucOrder = new TransactionData();
+    
+                        sucOrder.setItem(ptr.getDish().getName());
+                        sucOrder.setAmount(quantity);
+                        sucOrder.setType("order");
+                        sucOrder.setProfit((ptr.getDish().getProfit())*(quantity*1.0));
+                        sucOrder.setSuccess(true);
+    
+                        addTransactionNode(sucOrder);
+
+                        for(int i = 0; i < ptr.getDish().getStockID().length;i++){
+                            updateStock(null, ptr.getDish().getStockID()[i], (quantity)*(-1));
+                        }
+                    
+                        return;
+                    }
+
+                    else{
+                        TransactionData sucOrder = new TransactionData();
+
+                        sucOrder.setItem(ptr.getDish().getName());
+                        sucOrder.setAmount(quantity);
+                        sucOrder.setType("order");
+                        sucOrder.setProfit(0.0);
+                        sucOrder.setSuccess(false);
+
+                        addTransactionNode(sucOrder);
                     }
                     ptr = ptr.getNextMenuNode();
                 }
 
-                if(checkDishAvailability(ptr.getDish().getName(), quantity)){
-                    hit = true;
-                }
 
-                if(hit == true){
-                    TransactionData sucOrder = new TransactionData();
-    
-                    sucOrder.setItem(ptr.getDish().getName());
-                    sucOrder.setAmount(quantity);
-                    sucOrder.setType("order");
-                    sucOrder.setProfit((ptr.getDish().getProfit())*(quantity));
-                    sucOrder.setSuccess(true);
-    
-                    addTransactionNode(sucOrder);
-                }
-            }
 
         }
             
@@ -612,9 +649,13 @@ public class RUHungry {
 
     public double profit () {
 
-	// WRITE YOUR CODE HERE
+        double profit = 0;
+
+        for(TransactionNode ptr = transactionVar;ptr != null; ptr = ptr.getNext()){
+            profit += ptr.getData().getProfit();
+        }
 	
-        return 0.12; // update the return value
+        return profit; // update the return value
     }
 
     /**
@@ -631,7 +672,36 @@ public class RUHungry {
 
     public void donation (String ingredientName, int quantity){
 
-	// WRITE YOUR CODE HERE
+        double pro = profit();
+
+        TransactionData data = new TransactionData();
+
+        data.setAmount(quantity);
+        data.setItem(ingredientName);
+        data.setProfit(0.0);
+        data.setType("donation");
+
+        if(pro > 50.0){
+
+            if(findStockNode(ingredientName).getIngredient().getStockLevel() >= quantity){
+
+                data.setSuccess(true);
+
+                addTransactionNode(data);
+
+                updateStock(ingredientName, 0, (quantity)*(-1));
+
+            }
+
+            else{
+
+                data.setSuccess(false);
+
+                addTransactionNode(data);
+
+            }
+
+        }
 
     }
 
@@ -650,7 +720,36 @@ public class RUHungry {
 
     public void restock (String ingredientName, int quantity){
 
-	// WRITE YOUR CODE HERE
+        double restockCost = (findStockNode(ingredientName).getIngredient().getCost())*quantity;
+        double pro = profit();
+
+        if(pro >= restockCost){
+
+            TransactionData data = new TransactionData();
+
+            data.setAmount(quantity);
+            data.setItem(ingredientName);
+            data.setProfit((restockCost)*(-1));
+            data.setType("restock");
+            data.setSuccess(true);
+
+            addTransactionNode(data);
+            updateStock(ingredientName, 0, (-1)*(quantity));
+        }
+
+        else{
+
+            TransactionData data = new TransactionData();
+
+            data.setAmount(quantity);
+            data.setItem(ingredientName);
+            data.setProfit(0.0);
+            data.setType("restock");
+            data.setSuccess(false);
+
+            addTransactionNode(data);
+        }
+
     }
 
    /*
