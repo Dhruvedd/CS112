@@ -85,21 +85,19 @@ public class RUHungry {
      * 2. As you read through the input file:
      *      a) populate the categoryVar array
      *      b) populate menuVar depending on which index (aka which category) you are in
-     *          i) make a dish object (with filled parameters -- don't worry about "price" and "profit" in the dish object for right now)
+     *          i) make a dish object (with filled parameters -- don't worry about "dishPrice" and "profit" in the dish object for right now)
      *          ii) create menuNode and insert at the front of menuVar (NOTE! there will be multiple menuNodes in one index)
      * 
      * @param inputFile - use menu.in file which contains all the dishes
      */
 
-    public void menu(String inputFile) {
+     public void menu(String inputFile) {
 
         StdIn.setFile(inputFile); // opens the inputFile to be read
 
         menuVar = new MenuNode[StdIn.readInt()];
         StdIn.readLine();
         categoryVar = new String[menuVar.length];
-
-        stockVarSize = 0;
 
 
         int i = 0;
@@ -123,7 +121,10 @@ public class RUHungry {
                     dishIngSID[k] = StdIn.readInt();
                 }
 
-                StdIn.readLine();
+                if(StdIn.hasNextLine()){
+                    StdIn.readLine();
+                }
+                
 
                 Dish dish = new Dish(categoryVar[i], dishname, dishIngSID);
 
@@ -228,7 +229,11 @@ public class RUHungry {
         if(stockVar[Index] == null) stockVar[Index] = newNode;
 
         else{
-            newNode.setNextStockNode(stockVar[Index]);
+
+            StockNode newHead = stockVar[Index];
+
+            newNode.setNextStockNode(newHead);
+            
             stockVar[Index] = newNode;
         }
 
@@ -291,7 +296,7 @@ public class RUHungry {
     /**
      * This method updates the stock amount of an ingredient.
      * 
-     * 1. you will be given the ingredientName **OR** the ingredientID:
+     * 1. you will be given the ingredientName *OR* the ingredientID:
      *      a) the ingredientName is NOT null: find the ingredient and add the given stock amount to the
      *         current stock amount
      *      b) the ingredientID is NOT -1: find the ingredient and add the given stock amount to the
@@ -319,7 +324,7 @@ public class RUHungry {
 
     /**
      * PICK UP LINE OF THE METHOD:
-     * *are you a single ‘for’ loop? cuz i only have i’s for you*
+     * are you a single ‘for’ loop? cuz i only have i’s for you
      * 
      * ***********
      * This method goes over menuVar to update the price and profit of each dish,
@@ -340,16 +345,14 @@ public class RUHungry {
 
         for(int i = 0; i < menuVar.length; i++){
 
-
             for(MenuNode ptr = menuVar[i]; ptr != null; ptr = ptr.getNextMenuNode()){
+                double dishCost = 0.0; // Reset dishCost for each dish
 
-                double dishCost = 0.0;
-                
                 for(int j = 0; j < ptr.getDish().getStockID().length;j++){
 
-                   double ingCost = findStockNode(ptr.getDish().getStockID()[j]).getIngredient().getCost();
-
-                   dishCost += ingCost;
+                    double ingCost = findStockNode(ptr.getDish().getStockID()[j]).getIngredient().getCost();
+                    dishCost += ingCost;
+                    
                 }
 
                 double dishPrice = dishCost*(1.2);
@@ -361,9 +364,8 @@ public class RUHungry {
                 currentDish.setProfit(dishProfit);
             }
 
-
         }
-
+        
     }
 
     /**
@@ -398,8 +400,7 @@ public class RUHungry {
         StdIn.setFile(inputFile); // opens inputFile to be read by StdIn
 
         stockVarSize = StdIn.readInt();
-        StdIn.readLine();
-
+        System.out.println(stockVarSize);
         stockVar = new StockNode[stockVarSize];
 
 
@@ -417,7 +418,9 @@ public class RUHungry {
             StdIn.readChar();
 
             int ingStock = StdIn.readInt();
-            StdIn.readLine();
+
+            if(StdIn.hasNextLine()) StdIn.readLine();
+            
 
             Ingredient ing = new Ingredient(ingID, ingName, ingStock, ingCost);
 
@@ -465,7 +468,7 @@ public class RUHungry {
 
     /**
      * PICK UP LINE OF THE METHOD:
-     * *are you the break command? cuz everything else stops when I see you*
+     * are you the break command? cuz everything else stops when I see you
      * 
      * *************
      * This method checks if there's enough in stock to prepare a dish.
@@ -530,7 +533,15 @@ public class RUHungry {
             sucOrder.setItem(ptr.getDish().getName());
             sucOrder.setAmount(quantity);
             sucOrder.setType("order");
-            sucOrder.setProfit((ptr.getDish().getProfit())*(quantity*1.0));
+
+           if (quantity > 0) {
+                sucOrder.setProfit((ptr.getDish().getProfit()) * quantity);
+            } 
+            
+            else {
+                sucOrder.setProfit(0.0);
+            }
+
             sucOrder.setSuccess(true);
 
             addTransactionNode(sucOrder);
@@ -566,7 +577,13 @@ public class RUHungry {
                     sucOrder.setItem(ptr.getDish().getName());
                     sucOrder.setAmount(quantity);
                     sucOrder.setType("order");
-                    sucOrder.setProfit((ptr.getDish().getProfit())*(quantity*1.0));
+                  
+                    if (quantity > 0) {
+                        sucOrder.setProfit((ptr.getDish().getProfit()) * (quantity * 1.0));
+                    } 
+                    else {
+                         sucOrder.setProfit(0.0);
+                    }
                     sucOrder.setSuccess(true);
 
                     addTransactionNode(sucOrder);
@@ -608,7 +625,13 @@ public class RUHungry {
                         sucOrder.setItem(ptr.getDish().getName());
                         sucOrder.setAmount(quantity);
                         sucOrder.setType("order");
-                        sucOrder.setProfit((ptr.getDish().getProfit())*(quantity*1.0));
+                        
+                        if (quantity > 0) {
+                        sucOrder.setProfit((ptr.getDish().getProfit()) * (quantity * 1.0));
+                        } else {
+                         sucOrder.setProfit(0.0);
+                        }
+
                         sucOrder.setSuccess(true);
     
                         addTransactionNode(sucOrder);

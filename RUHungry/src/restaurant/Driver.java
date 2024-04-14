@@ -30,15 +30,19 @@ public class Driver {
         RUHungry rh = new RUHungry();
 
 	// 3. Call the menu() method to read the menu
+        
+
+        rh.createStockHashTable("stock.in");// testing createStockHashTable and addStockNode methods
+
         rh.menu(inputFile);//Testing the first menu method
 
-        rh.createStockHashTable(inputFile2);// testing createStockHashTable and addStockNode methods
+        rh.updatePriceAndProfit();
+        
+        //testing that method
 
-        rh.updatePriceAndProfit();//testing that method
 
 
-
-       /* StdIn.setFile("order1.in");
+      /*   StdIn.setFile("order1.in");
         int amount = StdIn.readInt();
         StdIn.readLine();
 
@@ -49,7 +53,7 @@ public class Driver {
                 String orderDish = StdIn.readLine();
 
                 rh.order(orderDish, quant);
-        } // Testing the order method
+        } // Testing the order method */
 
 
        /*  StdIn.setFile("donate1.in");
@@ -78,7 +82,7 @@ public class Driver {
                 rh.restock(item, resAmount);
         }//testing restock */
 
-        StdIn.setFile("transaction1.in");
+         StdIn.setFile("transaction1.in");
         int numTrans = StdIn.readInt();
         StdIn.readLine();
 
@@ -103,6 +107,7 @@ public class Driver {
                 }
         } 
 
+        
 
 	// 4. Set output file
 	// Option to remove this line if you want to print directly to the screen
