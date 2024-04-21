@@ -25,29 +25,27 @@ import java.util.*;
 
 public class Clusters {
 
-    public static void main(String[] args) {
 
-        if ( args.length < 2 ) {
-            StdOut.println(
-                "Execute: java -cp bin spiderman.Clusters <dimension INput file> <collider OUTput file>");
-                return;
+    public HashMap<Integer, ArrayList<Integer>> table;
+
+    public static void main(String[] args) {
+        if (args.length < 2) {
+            System.out.println("Usage: java Clusters <dimensionInputFile> <clusterOutputFile>");
+            return;
         }
 
-        // WRITE YOUR CODE HERE
-
-        
-
+        Clusters clusters = new Clusters();
+        clusters.DimensionsCreate(args[0]);
+        clusters.Print(args[1]);
     }
-
     
 
  
-    public void DimensionsCreate(){
+    public void DimensionsCreate(String In){
  
  
-        StdIn.setFile("dimension.in");
+        StdIn.setFile(In);
         // StdIn.setFile(inFile);
-        //StdOut.setFile(outFile);
  
         int dimNum = StdIn.readInt();
  
@@ -55,24 +53,102 @@ public class Clusters {
  
         double threshold = StdIn.readDouble();
         StdIn.readLine();
+
+        table = new HashMap<>(tableSize);
  
-        Hashtable<String, Integer> dimTable = new Hashtable<>(tableSize);
+        double currDim = 0; 
  
-        int currDim = 0; 
- 
-        while(StdIn.hasNextLine()){
+        for(int i = 0; i < dimNum; i++){
 
-            int dime = StdIn.readInt();
+            Dimension dime = new Dimension();
 
+            dime.setDimensionNum(StdIn.readInt());
+            dime.setCanonNum(StdIn.readInt());
+            dime.setWeight(StdIn.readInt());
 
+            if(!table.containsKey(dime.DimensionNum % tableSize)){
+                table.put(dime.getDimensionNum() % tableSize, new ArrayList<>());
+            }
 
+            table.get(dime.getDimensionNum() % tableSize).add(0, dime.getDimensionNum());
+            currDim++;
+
+            if((double)((currDim)/(table.size())) >= threshold ){
+                tableSize *= 2;
+                rehash(tableSize);
+            }
+        }
+        Connect();
+    }
+
+    public void rehash(int newTableSize) {
+
+        HashMap<Integer, ArrayList<Integer>> tempTable = new HashMap<>(newTableSize);
+
+        for(ArrayList<Integer> list : table.values()){
+
+            for(int dimNum : list){
+
+                if(!tempTable.containsKey(dimNum % newTableSize)){
+                    tempTable.put(dimNum % newTableSize, new ArrayList<>());
+                }
+
+                tempTable.get(dimNum % newTableSize).add(0, dimNum);
+            }
         }
 
+        table.clear();
+        table.putAll(tempTable);
+    }
 
+    public void Connect(){
+
+        for(int i=0 ; i<table.size() ; i++){
+
+            int conn1 = 0;
+            int conn2 = 0;
+
+            if(i==0){
+
+                conn1 = table.get(table.size()-1).get(0);
+                conn2 = table.get(table.size()-2).get(0);
+                
+                table.get(i).add(conn1);
+                table.get(i).add(conn2);
+            }
+
+            else if(i==1){
+
+                conn1 = table.get(i-1).get(0);
+                conn2 = table.get(table.size()-1).get(0);
+
+                table.get(i).add(conn1);
+                table.get(i).add(conn2);
+            }
+
+            else{
+
+                conn1 = table.get(i-1).get(0);
+                conn2 = table.get(i-2).get(0);
+
+                table.get(i).add(conn1);
+                table.get(i).add(conn2);
+            }
+        }
     }
 
 
+    public void Print(String fileName){
 
-
-
+        StdOut.setFile(fileName);
+        for(ArrayList<Integer> list : table.values())
+        {
+            for(int dim : list)
+            {
+                StdOut.print(dim + " ");
+            }
+            StdOut.println();
+        
+        }
+    }
 }
