@@ -1,21 +1,21 @@
 package spiderman;
 
 public class DimensionNode {
-    private Dimension data;
+    private int data;
     private DimensionNode next;
 
     // Constructor
-    public DimensionNode(Dimension data) {
+    public DimensionNode(int data) {
         this.data = data;
         this.next = null;
     }
 
     // Getter and Setter methods
-    public Dimension getData() {
+    public int getData() {
         return data;
     }
 
-    public void setData(Dimension data) {
+    public void setData(int data) {
         this.data = data;
     }
 
