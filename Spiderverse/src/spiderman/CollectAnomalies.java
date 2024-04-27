@@ -42,26 +42,48 @@ import java.util.*;
  */
 
 public class CollectAnomalies {
-    
-    public static void main(String[] args) {
 
-        if ( args.length < 4 ) {
-            StdOut.println(
-                "Execute: java -cp bin spiderman.CollectAnomalies <dimension INput file> <spiderverse INput file> <hub INput file> <collected OUTput file>");
-                return;
-        }
-
-        CollectAnomalies ca = new CollectAnomalies();
-        String dims = args[0];
-        String spidey = args[1];
-        ca.defineHub(args[2]);
-        ca.createVerse(spidey);
-        
-    }
-
+    public Clusters cl;
     public Person[] spiderverse;
     public int hub;
     public ArrayList<Anomaly> anomalies;
+    public HashMap<Integer, ArrayList<Integer>> table;
+    
+    public static void main(String[] args) {
+
+      //  if ( args.length < 4 ) {
+      //      StdOut.println(
+      //          "Execute: java -cp bin spiderman.CollectAnomalies <dimension INput file> <spiderverse INput file> <hub INput file> <collected OUTput file>");
+      //          return;
+      //  }
+
+        CollectAnomalies ca = new CollectAnomalies();
+        //String dims = args[0];
+        //ca.setTable(dims);
+        //String spidey = args[1];
+        //ca.defineHub(args[2]);
+        //ca.createVerse(spidey);
+        //ca.collectAno();
+        //ca.printAno(args[3]);
+
+
+
+        String dims = "dimension.in";
+        ca.setTable(dims);
+        String spidey = "spiderverse.in";
+        ca.defineHub("hub.in");
+        ca.createVerse(spidey);
+        ca.collectAno();
+        ca.printAno("collected.out");
+        
+    }
+
+    public void setTable(String dims){
+        Clusters cl = new Clusters();
+        table = cl.getTable(dims);
+    }
+
+    
 
     public void defineHub(String file){
         StdIn.setFile(file);
@@ -70,6 +92,8 @@ public class CollectAnomalies {
 
 
     public void createVerse(String file){
+
+        anomalies = new ArrayList<>();
 
         StdIn.setFile(file);
 
@@ -92,6 +116,7 @@ public class CollectAnomalies {
             StdIn.readLine();
 
             if((toMark.currDim == toMark.belong) || (toMark.currDim == hub)) toMark.spider = true;
+
             else{
                 toMark.spider = false;
                 Anomaly newAno = new Anomaly();
@@ -100,6 +125,7 @@ public class CollectAnomalies {
             }
 
             spiderverse[i] = toMark;
+            i++;
         }
     }
 
@@ -110,6 +136,8 @@ public class CollectAnomalies {
 
         for(Person person : spiderverse){
 
+            if(person == null) return null;
+
             if((person.spider == true)&&(ano.anomaly.currDim == person.currDim)){
                 return person.Name;
             }
@@ -117,20 +145,95 @@ public class CollectAnomalies {
         return null;
     }
 
+
+
     public void collectAno(){
 
+        for(Anomaly ano : anomalies){
 
+            ArrayList<Integer> toPath = new ArrayList<>();
+            ArrayList<Integer> fromPath = new ArrayList<>();
 
+            ArrayList<Integer> fullPath = new ArrayList<>();
 
+            int tagetDim = ano.anomaly.currDim;
 
+            boolean isSpider = false;
 
+            if(isSpidey(ano) != null){
+                isSpider = true;
+                ano.anomaly.Name = ano.anomaly.Name + " " + isSpidey(ano);
+            }
 
+            boolean hubFound = false;
+            boolean targetFound = false;
 
+            toPath.add(hub);
 
+            for(ArrayList<Integer> list : table.values()){
 
+                if(hubFound){
+                    toPath.add(list.get(0));
+                }
 
+                for(int dim : list){
+
+                    if(dim == hub && !hubFound){
+                        hubFound = true;
+                        toPath.add(list.get(0));
+                    }
+                    if(dim == tagetDim){
+                        targetFound = true;
+                        break;
+                    }
+
+                }
+
+                if(targetFound) break;
+
+            }
+
+            ArrayList<Integer> temp = new ArrayList<>();
+            temp = toPath;
+
+            fromPath = temp;
+            Collections.reverse(fromPath);
+
+            if(!isSpider){
+                for(int dim : toPath){
+                    fullPath.add(dim);
+                }
+            }
+
+            fullPath.add(tagetDim);
+
+            for(int dim : fromPath){
+                fullPath.add(dim);
+            }
+
+            ano.path = fullPath;
+        }
 
     }
+
+    public void printAno(String file){
+
+        StdOut.setFile(file);
+
+        for(Anomaly ano : anomalies){
+
+            StdOut.print(ano.anomaly.Name + " ");
+
+            for(int pathDim : ano.path){
+
+                StdOut.print(pathDim + " ");
+
+            }
+
+            StdOut.println();
+        }
+    }
+    
 
 
 

@@ -153,4 +153,10 @@ public class Clusters {
         
         }
     }
+
+    public HashMap<Integer, ArrayList<Integer>> getTable(String input){
+        DimensionsCreate(input);
+        return table;
+    }
+
 }
