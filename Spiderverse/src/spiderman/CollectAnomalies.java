@@ -1,4 +1,5 @@
 package spiderman;
+import java.util.*;
 
 /**
  * Steps to implement this class main method:
@@ -50,7 +51,94 @@ public class CollectAnomalies {
                 return;
         }
 
-        // WRITE YOUR CODE HERE
+        CollectAnomalies ca = new CollectAnomalies();
+        String dims = args[0];
+        String spidey = args[1];
+        ca.defineHub(args[2]);
+        ca.createVerse(spidey);
         
     }
+
+    public Person[] spiderverse;
+    public int hub;
+    public ArrayList<Anomaly> anomalies;
+
+    public void defineHub(String file){
+        StdIn.setFile(file);
+        hub = StdIn.readInt();
+    }
+
+
+    public void createVerse(String file){
+
+        StdIn.setFile(file);
+
+        int verseSize = StdIn.readInt();
+        StdIn.readLine();
+
+        spiderverse = new Person[verseSize];
+
+        int i = 0;
+
+        while(StdIn.hasNextLine()){
+
+            Person toMark = new Person();
+
+            toMark.currDim = StdIn.readInt();
+            StdIn.readChar();
+            toMark.Name = StdIn.readString();
+            StdIn.readChar();
+            toMark.belong = StdIn.readInt();
+            StdIn.readLine();
+
+            if((toMark.currDim == toMark.belong) || (toMark.currDim == hub)) toMark.spider = true;
+            else{
+                toMark.spider = false;
+                Anomaly newAno = new Anomaly();
+                newAno.anomaly = toMark;
+                anomalies.add(newAno);
+            }
+
+            spiderverse[i] = toMark;
+        }
+    }
+
+
+
+    public String isSpidey(Anomaly ano){ // Helper
+
+
+        for(Person person : spiderverse){
+
+            if((person.spider == true)&&(ano.anomaly.currDim == person.currDim)){
+                return person.Name;
+            }
+        }
+        return null;
+    }
+
+    public void collectAno(){
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
 }

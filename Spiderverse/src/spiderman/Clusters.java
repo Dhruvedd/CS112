@@ -141,12 +141,14 @@ public class Clusters {
     public void Print(String fileName){
 
         StdOut.setFile(fileName);
-        for(ArrayList<Integer> list : table.values())
-        {
-            for(int dim : list)
-            {
+        for(ArrayList<Integer> list : table.values()){
+
+            for(int dim : list){
+
                 StdOut.print(dim + " ");
+
             }
+
             StdOut.println();
         
         }

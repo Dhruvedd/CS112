@@ -1,7 +1,6 @@
 package spiderman;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Steps to implement this class main method:
@@ -39,6 +38,8 @@ import java.util.HashMap;
 public class Collider {
 
     public HashMap<Integer, ArrayList<Integer>> table;
+    public HashMap<Integer, ArrayList<Integer>> gra;
+    public ArrayList<Integer> dimList = new ArrayList<>();
 
     public static void main(String[] args) {
 
@@ -60,8 +61,6 @@ public class Collider {
         // WRITE YOUR CODE HERE
         
     }
-
-    public DimensionNode[] gra = new DimensionNode[65];
 
      public void DimensionsCreate(String In){
  
@@ -159,13 +158,8 @@ public class Collider {
         }
     }
 
-    private boolean isThere(DimensionNode[] grap, int dime){  //helper method
-
-        for(int i = 0; i < grap.length;i++){
-            if(grap[i] == null) return false;
-            else if(grap[i].getData() == dime) return true;
-        }
-        return false;
+    private boolean isThere(ArrayList<Integer> grap, int dime){  //helper method
+        return grap.contains(dime);
     }
 
     private int locateIndex(DimensionNode[] grap,int dim){
@@ -175,114 +169,53 @@ public class Collider {
         return -1;
     }
 
-    public void graph(){
-
-        int i = 0;
-
-        for(ArrayList<Integer> list : table.values()){
-
-            DimensionNode firstInLine = new DimensionNode(list.get(0));
-           
-            for(int dim : list){
-
-                if(!isThere(gra, dim)){
-                    DimensionNode newBit = new DimensionNode(dim);
-                    
-                    gra[i] = newBit;
-                    gra[i].setNext(firstInLine);
-                    i++;
-
-                    if(dim != firstInLine.getData()){
-
-                        DimensionNode ptr = gra[locateIndex(gra, firstInLine.getData())];
-
-                        while(ptr.getNext() != null){
-                            ptr = ptr.getNext();
-                        }
-
-                        ptr.setNext(newBit);
-
-                        }
-                }
-
-                else if(dim == firstInLine.getData()){
-
-
-                }
-                
-                else if(dim != firstInLine.getData()){
-
-                    DimensionNode newNode = new DimensionNode(dim);
-
-                    DimensionNode ptr = gra[locateIndex(gra, firstInLine.getData())];
-
-                    while(ptr.getNext() != null){
-                        ptr = ptr.getNext();
-                    }
-
-                    ptr.setNext(newNode);
-                    
-                }
-            }
-        }
-
-    } 
-
-    /*public void graph() {
-        gra = new DimensionNode[table.size()]; // Initialize the gra array
+    public void graph() {
     
-        int index = 0; // Index for storing dimensions in the gra array
-    
+        // First pass to initialize the gra array
         for (ArrayList<Integer> list : table.values()) {
-            // Get the first dimension in the cluster
-            int firstDimension = list.get(0);
-    
-            // Create a new DimensionNode for the first dimension
-            DimensionNode firstNode = new DimensionNode(firstDimension);
-    
-            // Add the firstNode to the adjacency list of the current dimension
-            gra[index] = firstNode;
-    
-            // Create edges from every other dimension to the first dimension in the cluster
-            for (int i = 1; i < list.size(); i++) {
-                int dimension = list.get(i);
-                DimensionNode newNode = new DimensionNode(dimension);
-    
-                // Add the newNode to the beginning of the adjacency list
-                newNode.setNext(gra[index]);
-                gra[index] = newNode;
+            for (int dim : list) {
+                if (!isThere(dimList, dim)) {
+                    dimList.add(dim);
+                }
             }
-    
-            // Create edges from the first dimension to every other dimension in the cluster
-            for (int i = 1; i < list.size(); i++) {
-                int dimension = list.get(i);
-                DimensionNode newNode = new DimensionNode(dimension);
-    
-                // Add newNode to the beginning of the adjacency list of the first dimension
-                newNode.setNext(firstNode.getNext());
-                firstNode.setNext(newNode);
-            }
-    
-            index++; // Move to the next index in the gra array
         }
-    } */
+
+        int graphSize = dimList.size();
+
+        gra = new HashMap<>(graphSize);
+
+        for(int dim : dimList){
+
+                gra.put(dim, new ArrayList<>());
+                gra.get(dim).add(0,dim);
+        
+        }
+
+        for (ArrayList<Integer> list : table.values()) {
+
+            int headDim = list.get(0);
+
+            for (int dim : list) {
+
+                if(!gra.get(headDim).contains(dim)) gra.get(headDim).add(dim);
+                if(!gra.get(dim).contains(headDim)) gra.get(dim).add(headDim);
+
+            }
+        }
+    }
+    
+
 
     public void printGraph(String file) {
 
         StdOut.setFile(file);
 
-
-        for (int i = 0; i < gra.length; i++) {
-            DimensionNode currentNode = gra[i];
-            if (currentNode != null) {
-                StdOut.print(currentNode.getData() + ": ");
-                DimensionNode nextNode = currentNode.getNext();
-                while (nextNode != null) {
-                    StdOut.print(nextNode.getData() + " ");
-                    nextNode = nextNode.getNext();
-                }
-                StdOut.println();
+        for(ArrayList<Integer> list : gra.values())
+        {
+            for(int dim : list){
+                StdOut.print(dim + " ");
             }
+            StdOut.println();
         }
     }
 

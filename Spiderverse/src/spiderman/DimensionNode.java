@@ -2,7 +2,7 @@ package spiderman;
 
 public class DimensionNode {
     private int data;
-    private DimensionNode next;
+    public DimensionNode next;
 
     // Constructor
     public DimensionNode(int data) {
