@@ -420,7 +420,13 @@ public class GoHomeMachine {
 
             for(Dimension dim : shortPath){
 
-                totalWeight += dim.getWeight();
+                if(dim.equals(shortPath.get(0)) || dim.equals(shortPath.get(shortPath.size() - 1))){
+                    totalWeight += dim.getWeight();
+                }
+
+                else{
+                    totalWeight += (dim.getWeight() * 2);
+                }
 
             }
 
@@ -442,7 +448,7 @@ public class GoHomeMachine {
 
     public void Printr(String file){
 
-        StdOut.setFile("report.out");
+        StdOut.setFile(file);
 
         for(Anomaly ano : anoms){
 
