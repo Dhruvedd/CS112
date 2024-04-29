@@ -53,11 +53,11 @@ public class CollectAnomalies {
     
     public static void main(String[] args) {
 
-      //  if ( args.length < 4 ) {
-      //      StdOut.println(
-      //          "Execute: java -cp bin spiderman.CollectAnomalies <dimension INput file> <spiderverse INput file> <hub INput file> <collected OUTput file>");
-      //          return;
-      //  }
+        if ( args.length < 4 ) {
+            StdOut.println(
+                "Execute: java -cp bin spiderman.CollectAnomalies <dimension INput file> <spiderverse INput file> <hub INput file> <collected OUTput file>");
+                return;
+        }
 
         CollectAnomalies ca = new CollectAnomalies();
         String dims = args[0];
@@ -182,13 +182,6 @@ public class CollectAnomalies {
 
     private boolean isThere(ArrayList<Integer> grap, int dime){  //helper method
         return grap.contains(dime);
-    }
-
-    private int locateIndex(DimensionNode[] grap,int dim){
-        for(int i = 0; i < grap.length; i++){
-            if(grap[i].getData() == dim) return i;
-        }
-        return -1;
     }
 
     public void graph() {

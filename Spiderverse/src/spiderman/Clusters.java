@@ -26,7 +26,7 @@ import java.util.*;
 public class Clusters {
 
 
-    public HashMap<Integer, ArrayList<Integer>> table;
+    public HashMap<Integer, ArrayList<Dimension>> table;
 
     public static void main(String[] args) {
         if (args.length < 2) {
@@ -70,7 +70,7 @@ public class Clusters {
                 table.put(dime.getDimensionNum() % tableSize, new ArrayList<>());
             }
 
-            table.get(dime.getDimensionNum() % tableSize).add(0, dime.getDimensionNum());
+            table.get(dime.getDimensionNum() % tableSize).add(0, dime);
             currDim++;
 
             if((double)((currDim)/(table.size())) >= threshold ){
@@ -83,17 +83,17 @@ public class Clusters {
 
     public void rehash(int newTableSize) {
 
-        HashMap<Integer, ArrayList<Integer>> tempTable = new HashMap<>(newTableSize);
+        HashMap<Integer, ArrayList<Dimension>> tempTable = new HashMap<>(newTableSize);
 
-        for(ArrayList<Integer> list : table.values()){
+        for(ArrayList<Dimension> list : table.values()){
 
-            for(int dimNum : list){
+            for(Dimension dim : list){
 
-                if(!tempTable.containsKey(dimNum % newTableSize)){
-                    tempTable.put(dimNum % newTableSize, new ArrayList<>());
+                if(!tempTable.containsKey(dim.getDimensionNum() % newTableSize)){
+                    tempTable.put(dim.getDimensionNum() % newTableSize, new ArrayList<>());
                 }
 
-                tempTable.get(dimNum % newTableSize).add(0, dimNum);
+                tempTable.get(dim.getDimensionNum() % newTableSize).add(0, dim);
             }
         }
 
@@ -105,8 +105,8 @@ public class Clusters {
 
         for(int i=0 ; i<table.size() ; i++){
 
-            int conn1 = 0;
-            int conn2 = 0;
+            Dimension conn1;
+            Dimension conn2;
 
             if(i==0){
 
@@ -141,22 +141,17 @@ public class Clusters {
     public void Print(String fileName){
 
         StdOut.setFile(fileName);
-        for(ArrayList<Integer> list : table.values()){
+        for(ArrayList<Dimension> list : table.values()){
 
-            for(int dim : list){
+            for(Dimension dim : list){
 
-                StdOut.print(dim + " ");
+                StdOut.print(dim.getDimensionNum() + " ");
 
             }
 
             StdOut.println();
         
         }
-    }
-
-    public HashMap<Integer, ArrayList<Integer>> getTable(String input){
-        DimensionsCreate(input);
-        return table;
     }
 
 }

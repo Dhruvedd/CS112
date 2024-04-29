@@ -37,9 +37,9 @@ import java.util.*;
 
 public class Collider {
 
-    public HashMap<Integer, ArrayList<Integer>> table;
-    public HashMap<Integer, ArrayList<Integer>> gra;
-    public ArrayList<Integer> dimList = new ArrayList<>();
+    public HashMap<Integer, ArrayList<Dimension>> table;
+    public HashMap<Integer, ArrayList<Dimension>> gra;
+    public ArrayList<Dimension> dimList = new ArrayList<>();
 
     public static void main(String[] args) {
 
@@ -62,7 +62,7 @@ public class Collider {
         
     }
 
-     public void DimensionsCreate(String In){
+    public void DimensionsCreate(String In){
  
  
         StdIn.setFile(In);
@@ -91,7 +91,7 @@ public class Collider {
                 table.put(dime.getDimensionNum() % tableSize, new ArrayList<>());
             }
 
-            table.get(dime.getDimensionNum() % tableSize).add(0, dime.getDimensionNum());
+            table.get(dime.getDimensionNum() % tableSize).add(0, dime);
             currDim++;
 
             if((double)((currDim)/(table.size())) >= threshold ){
@@ -104,17 +104,17 @@ public class Collider {
 
     public void rehash(int newTableSize) {
 
-        HashMap<Integer, ArrayList<Integer>> tempTable = new HashMap<>(newTableSize);
+        HashMap<Integer, ArrayList<Dimension>> tempTable = new HashMap<>(newTableSize);
 
-        for(ArrayList<Integer> list : table.values()){
+        for(ArrayList<Dimension> list : table.values()){
 
-            for(int dimNum : list){
+            for(Dimension dim : list){
 
-                if(!tempTable.containsKey(dimNum % newTableSize)){
-                    tempTable.put(dimNum % newTableSize, new ArrayList<>());
+                if(!tempTable.containsKey(dim.getDimensionNum() % newTableSize)){
+                    tempTable.put(dim.getDimensionNum() % newTableSize, new ArrayList<>());
                 }
 
-                tempTable.get(dimNum % newTableSize).add(0, dimNum);
+                tempTable.get(dim.getDimensionNum() % newTableSize).add(0, dim);
             }
         }
 
@@ -126,8 +126,8 @@ public class Collider {
 
         for(int i=0 ; i<table.size() ; i++){
 
-            int conn1 = 0;
-            int conn2 = 0;
+            Dimension conn1;
+            Dimension conn2;
 
             if(i==0){
 
@@ -158,22 +158,15 @@ public class Collider {
         }
     }
 
-    private boolean isThere(ArrayList<Integer> grap, int dime){  //helper method
+    private boolean isThere(ArrayList<Dimension> grap, Dimension dime){  //helper method
         return grap.contains(dime);
-    }
-
-    private int locateIndex(DimensionNode[] grap,int dim){
-        for(int i = 0; i < grap.length; i++){
-            if(grap[i].getData() == dim) return i;
-        }
-        return -1;
     }
 
     public void graph() {
     
         // First pass to initialize the gra array
-        for (ArrayList<Integer> list : table.values()) {
-            for (int dim : list) {
+        for (ArrayList<Dimension> list : table.values()) {
+            for (Dimension dim : list) {
                 if (!isThere(dimList, dim)) {
                     dimList.add(dim);
                 }
@@ -184,21 +177,21 @@ public class Collider {
 
         gra = new HashMap<>(graphSize);
 
-        for(int dim : dimList){
+        for(Dimension dim : dimList){
 
-                gra.put(dim, new ArrayList<>());
-                gra.get(dim).add(0,dim);
+                gra.put(dim.getDimensionNum(), new ArrayList<>());
+                gra.get(dim.getDimensionNum()).add(0,dim);
         
         }
 
-        for (ArrayList<Integer> list : table.values()) {
+        for (ArrayList<Dimension> list : table.values()) {
 
-            int headDim = list.get(0);
+            Dimension headDim = list.get(0);
 
-            for (int dim : list) {
+            for (Dimension dim : list) {
 
-                if(!gra.get(headDim).contains(dim)) gra.get(headDim).add(dim);
-                if(!gra.get(dim).contains(headDim)) gra.get(dim).add(headDim);
+                if(!gra.get(headDim.getDimensionNum()).contains(dim)) gra.get(headDim.getDimensionNum()).add(dim);
+                if(!gra.get(dim.getDimensionNum()).contains(headDim)) gra.get(dim.getDimensionNum()).add(headDim);
 
             }
         }
@@ -210,10 +203,10 @@ public class Collider {
 
         StdOut.setFile(file);
 
-        for(ArrayList<Integer> list : gra.values())
+        for(ArrayList<Dimension> list : gra.values())
         {
-            for(int dim : list){
-                StdOut.print(dim + " ");
+            for(Dimension dim : list){
+                StdOut.print(dim.getDimensionNum() + " ");
             }
             StdOut.println();
         }

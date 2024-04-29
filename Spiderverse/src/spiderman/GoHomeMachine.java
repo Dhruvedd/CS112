@@ -1,4 +1,5 @@
 package spiderman;
+import java.util.*;
 
 /**
  * Steps to implement this class main method:
@@ -51,6 +52,12 @@ package spiderman;
  */
 
 public class GoHomeMachine {
+
+
+    public HashMap<Integer, ArrayList<Dimension>> table;
+    public HashMap<Integer, ArrayList<Dimension>> gra;
+    public ArrayList<Dimension> dimList = new ArrayList<>();
+
     
     public static void main(String[] args) {
 
@@ -63,4 +70,147 @@ public class GoHomeMachine {
         // WRITE YOUR CODE HERE
         
     }
+
+
+
+
+
+    public void DimensionsCreate(String In){
+ 
+ 
+        StdIn.setFile(In);
+        // StdIn.setFile(inFile);
+ 
+        int dimNum = StdIn.readInt();
+ 
+        int tableSize = StdIn.readInt();
+ 
+        double threshold = StdIn.readDouble();
+        StdIn.readLine();
+
+        table = new HashMap<>(tableSize);
+ 
+        double currDim = 0; 
+ 
+        for(int i = 0; i < dimNum; i++){
+
+            Dimension dime = new Dimension();
+
+            dime.setDimensionNum(StdIn.readInt());
+            dime.setCanonNum(StdIn.readInt());
+            dime.setWeight(StdIn.readInt());
+
+            if(!table.containsKey(dime.DimensionNum % tableSize)){
+                table.put(dime.getDimensionNum() % tableSize, new ArrayList<>());
+            }
+
+            table.get(dime.getDimensionNum() % tableSize).add(0, dime);
+            currDim++;
+
+            if((double)((currDim)/(table.size())) >= threshold ){
+                tableSize *= 2;
+                rehash(tableSize);
+            }
+        }
+        Connect();
+    }
+
+    public void rehash(int newTableSize) {
+
+        HashMap<Integer, ArrayList<Dimension>> tempTable = new HashMap<>(newTableSize);
+
+        for(ArrayList<Dimension> list : table.values()){
+
+            for(Dimension dim : list){
+
+                if(!tempTable.containsKey(dim.getDimensionNum() % newTableSize)){
+                    tempTable.put(dim.getDimensionNum() % newTableSize, new ArrayList<>());
+                }
+
+                tempTable.get(dim.getDimensionNum() % newTableSize).add(0, dim);
+            }
+        }
+
+        table.clear();
+        table.putAll(tempTable);
+    }
+
+    public void Connect(){
+
+        for(int i=0 ; i<table.size() ; i++){
+
+            Dimension conn1;
+            Dimension conn2;
+
+            if(i==0){
+
+                conn1 = table.get(table.size()-1).get(0);
+                conn2 = table.get(table.size()-2).get(0);
+                
+                table.get(i).add(conn1);
+                table.get(i).add(conn2);
+            }
+
+            else if(i==1){
+
+                conn1 = table.get(i-1).get(0);
+                conn2 = table.get(table.size()-1).get(0);
+
+                table.get(i).add(conn1);
+                table.get(i).add(conn2);
+            }
+
+            else{
+
+                conn1 = table.get(i-1).get(0);
+                conn2 = table.get(i-2).get(0);
+
+                table.get(i).add(conn1);
+                table.get(i).add(conn2);
+            }
+        }
+    }
+
+    private boolean isThere(ArrayList<Dimension> grap, Dimension dime){  //helper method
+        return grap.contains(dime);
+    }
+
+    public void graph() {
+    
+        // First pass to initialize the gra array
+        for (ArrayList<Dimension> list : table.values()) {
+            for (Dimension dim : list) {
+                if (!isThere(dimList, dim)) {
+                    dimList.add(dim);
+                }
+            }
+        }
+
+        int graphSize = dimList.size();
+
+        gra = new HashMap<>(graphSize);
+
+        for(Dimension dim : dimList){
+
+                gra.put(dim.getDimensionNum(), new ArrayList<>());
+                gra.get(dim.getDimensionNum()).add(0,dim);
+        
+        }
+
+        for (ArrayList<Dimension> list : table.values()) {
+
+            Dimension headDim = list.get(0);
+
+            for (Dimension dim : list) {
+
+                if(!gra.get(headDim.getDimensionNum()).contains(dim)) gra.get(headDim.getDimensionNum()).add(dim);
+                if(!gra.get(dim.getDimensionNum()).contains(headDim)) gra.get(dim.getDimensionNum()).add(headDim);
+
+            }
+        }
+    }
+
+
+
+
 }
