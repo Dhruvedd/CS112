@@ -47,9 +47,9 @@ public class CollectAnomalies {
     public Person[] spiderverse;
     public int hub;
     public ArrayList<Anomaly> anomalies;
-    public HashMap<Integer, ArrayList<Integer>> table;
-    public HashMap<Integer, ArrayList<Integer>> gra;
-    public ArrayList<Integer> dimList = new ArrayList<>();
+    public HashMap<Integer, ArrayList<Dimension>> table;
+    public HashMap<Integer, ArrayList<Dimension>> gra;
+    public ArrayList<Dimension> dimList = new ArrayList<>();
     
     public static void main(String[] args) {
 
@@ -113,7 +113,7 @@ public class CollectAnomalies {
                 table.put(dime.getDimensionNum() % tableSize, new ArrayList<>());
             }
 
-            table.get(dime.getDimensionNum() % tableSize).add(0, dime.getDimensionNum());
+            table.get(dime.getDimensionNum() % tableSize).add(0, dime);
             currDim++;
 
             if((double)((currDim)/(table.size())) >= threshold ){
@@ -126,17 +126,17 @@ public class CollectAnomalies {
 
     public void rehash(int newTableSize) {
 
-        HashMap<Integer, ArrayList<Integer>> tempTable = new HashMap<>(newTableSize);
+        HashMap<Integer, ArrayList<Dimension>> tempTable = new HashMap<>(newTableSize);
 
-        for(ArrayList<Integer> list : table.values()){
+        for(ArrayList<Dimension> list : table.values()){
 
-            for(int dimNum : list){
+            for(Dimension dim : list){
 
-                if(!tempTable.containsKey(dimNum % newTableSize)){
-                    tempTable.put(dimNum % newTableSize, new ArrayList<>());
+                if(!tempTable.containsKey(dim.getDimensionNum() % newTableSize)){
+                    tempTable.put(dim.getDimensionNum() % newTableSize, new ArrayList<>());
                 }
 
-                tempTable.get(dimNum % newTableSize).add(0, dimNum);
+                tempTable.get(dim.getDimensionNum() % newTableSize).add(0, dim);
             }
         }
 
@@ -148,8 +148,8 @@ public class CollectAnomalies {
 
         for(int i=0 ; i<table.size() ; i++){
 
-            int conn1 = 0;
-            int conn2 = 0;
+            Dimension conn1;
+            Dimension conn2;
 
             if(i==0){
 
@@ -180,15 +180,15 @@ public class CollectAnomalies {
         }
     }
 
-    private boolean isThere(ArrayList<Integer> grap, int dime){  //helper method
+    private boolean isThere(ArrayList<Dimension> grap, Dimension dime){  //helper method
         return grap.contains(dime);
     }
 
     public void graph() {
     
         // First pass to initialize the gra array
-        for (ArrayList<Integer> list : table.values()) {
-            for (int dim : list) {
+        for (ArrayList<Dimension> list : table.values()) {
+            for (Dimension dim : list) {
                 if (!isThere(dimList, dim)) {
                     dimList.add(dim);
                 }
@@ -199,21 +199,21 @@ public class CollectAnomalies {
 
         gra = new HashMap<>(graphSize);
 
-        for(int dim : dimList){
+        for(Dimension dim : dimList){
 
-                gra.put(dim, new ArrayList<>());
-                gra.get(dim).add(0,dim);
+                gra.put(dim.getDimensionNum(), new ArrayList<>());
+                gra.get(dim.getDimensionNum()).add(0,dim);
         
         }
 
-        for (ArrayList<Integer> list : table.values()) {
+        for (ArrayList<Dimension> list : table.values()) {
 
-            int headDim = list.get(0);
+            Dimension headDim = list.get(0);
 
-            for (int dim : list) {
+            for (Dimension dim : list) {
 
-                if(!gra.get(headDim).contains(dim)) gra.get(headDim).add(dim);
-                if(!gra.get(dim).contains(headDim)) gra.get(dim).add(headDim);
+                if(!gra.get(headDim.getDimensionNum()).contains(dim)) gra.get(headDim.getDimensionNum()).add(dim);
+                if(!gra.get(dim.getDimensionNum()).contains(headDim)) gra.get(dim.getDimensionNum()).add(headDim);
 
             }
         }
@@ -340,7 +340,7 @@ public class CollectAnomalies {
     }
 
 
-    public ArrayList<Integer> shortestPath(HashMap<Integer, ArrayList<Integer>> graph, int start, int end) {
+    public ArrayList<Integer> shortestPath(HashMap<Integer, ArrayList<Dimension>> graph, int start, int end) {
         // Visited map to keep track of visited nodes
         HashMap<Integer, Boolean> visited = new HashMap<>();
     
@@ -373,13 +373,13 @@ public class CollectAnomalies {
             }
     
             // Explore neighbors of the current node
-            for (int neighbor : graph.get(currentNode)) {
-                if (!visited.containsKey(neighbor) || !visited.get(neighbor)) {
-                    visited.put(neighbor, true);
+            for (Dimension neighbor : graph.get(currentNode)) {
+                if (!visited.containsKey(neighbor.getDimensionNum()) || !visited.get(neighbor.getDimensionNum())) {
+                    visited.put(neighbor.getDimensionNum(), true);
                     ArrayList<Integer> newPath = new ArrayList<>(currentPath);
-                    newPath.add(neighbor);
+                    newPath.add(neighbor.getDimensionNum());
                     queue.add(newPath);
-                    parent.put(neighbor, currentNode); // Save parent of the neighbor
+                    parent.put(neighbor.getDimensionNum(), currentNode); // Save parent of the neighbor
                 }
             }
         }
